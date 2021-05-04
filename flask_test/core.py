@@ -1,4 +1,4 @@
-from config import TOKEN, XML_STR, ONE_INFO, MAIN_INFO, INFO
+from config import TOKEN, XML_STR, ONE_INFO, MAIN_INFO, INFO, NAME_LIST, BAD_WORDS
 from flask import Flask, request, make_response
 
 import hashlib
@@ -46,12 +46,27 @@ def chatme():
             content = xml.find('Content').text
             msgId = xml.find('MsgId').text
             totOpNum = 5
+            if u'刘嘉诚' in content or u'jc' in content or u'嘉诚' in content or u'刘总' in content:
+                content = '小白：刘总yyds！'
+                return XML_STR % (fromUserName, toUserName, createTime, msgType, content)
+
+            for x in NAME_LIST:
+                if x in content:
+                    content = '我可是个正经机器人不骂人也不夸人'
+                    return XML_STR % (fromUserName, toUserName, createTime, msgType, content)
+
+            for x in BAD_WORDS:
+                if x in content:
+                    content = '骂人可过分了啊'
+                    return XML_STR % (fromUserName, toUserName, createTime, msgType, content)
+            
 
             if u'游泳社' in content:
                 content = '小白：游泳社yyds！'
                 return XML_STR % (fromUserName, toUserName, createTime, msgType, content)
+
             if u'吗' in content or u'?' in content or u'？' in content:
-                content = "小白：" + content.strip('吗?？')+"!"
+                content = "小白：" + content.strip('吗嘛?？')+"!"
                 return XML_STR % (fromUserName, toUserName, createTime, msgType, content)
 
             if u'查看菜单' in content:
@@ -83,6 +98,6 @@ def chatme():
         return reply
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=80, debug=True)
+    app.run(host='0.0.0.0', port=5555, debug=True)
 
         
